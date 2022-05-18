@@ -3,6 +3,18 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+ext.versionMajor = 1
+ext.versionMinor = 0
+ext.versionPatch = 0
+
+def computeVersionName() {
+    return String.format('%d.%d.%d', versionMajor, versionMinor, versionPatch)
+}
+
+def computeVersionCode() {
+    return (versionMajor * 1000000) + (versionMinor * 100000) + (versionPatch * 10000) + Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
+}
+
 android {
     compileSdk 32
 
@@ -10,10 +22,19 @@ android {
         applicationId "com.example.cicdproject"
         minSdk 21
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionName computeVersionName()
+        versionCode computeVersionCode()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        config {
+            keyAlias alias
+            keyPassword keyPass
+            storeFile file(keystore)
+            storePassword storePass
+        }
     }
 
     buildTypes {
